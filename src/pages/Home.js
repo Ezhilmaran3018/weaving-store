@@ -5,21 +5,22 @@ import banarasImage from '../assets/banaras.jpg';
 import kanchipuramImage from '../assets/kanchipuram.jpg';
 import mysoreImage from '../assets/mysore.jpg';
 import cotonImage from '../assets/coton.jpg';
+import { useLanguage } from '../context/LanguageContext';
+
 const Home = () => {
+  const { t } = useLanguage();
+
   const featuredProducts = [
     {
- 
-  id: 1,
-  name: 'Banarasi Silk Saree',
-  category: 'Traditional',
-  price: 8999,                    
-  originalPrice: 12999,
-  discount: 31,
-  image: banarasImage,
-  rating: 5,
-  reviews: 245,
-
-      
+      id: 1,
+      name: 'Banarasi Silk Saree',
+      category: 'Traditional',
+      price: 8999,
+      originalPrice: 12999,
+      discount: 31,
+      image: banarasImage,
+      rating: 5,
+      reviews: 245,
     },
     {
       id: 2,
@@ -50,7 +51,7 @@ const Home = () => {
       price: 2499,
       originalPrice: 3999,
       discount: 37,
-      image:cotonImage,
+      image: cotonImage,
       rating: 4,
       reviews: 98,
     },
@@ -62,7 +63,7 @@ const Home = () => {
 
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="section-title">Featured Collection</h2>
+          <h2 className="section-title">{t.featuredCollection}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
@@ -73,12 +74,12 @@ const Home = () => {
 
       <section className="py-16 bg-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="section-title">Why Choose Us</h2>
+          <h2 className="section-title">{t.whyChooseUs}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { icon: '✓', title: 'Authentic Craftsmanship', desc: 'Handwoven by master artisans' },
-              { icon: '✓', title: 'Premium Quality', desc: 'Best fabrics and finest materials' },
-              { icon: '✓', title: 'Fast Shipping', desc: 'Secure and quick delivery' },
+              { icon: '✓', title: t.authenticCraftsmanship, desc: t.authenticDesc },
+              { icon: '✓', title: t.premiumQuality, desc: t.premiumDesc },
+              { icon: '✓', title: t.fastShipping, desc: t.fastDesc },
             ].map((item, idx) => (
               <div key={idx} className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition">
                 <div className="text-4xl text-secondary mb-4">{item.icon}</div>
