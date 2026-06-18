@@ -42,6 +42,21 @@ export const translations = {
     reviews: 'Reviews',
     outOfStock: 'Out of Stock',
 
+    filters: 'Filters',
+    category: 'Category',
+    priceRange: 'Price Range',
+    resetFilters: 'Reset Filters',
+    clearFilters: 'Clear Filters',
+    ourCollection: 'Our Collection',
+    sareesFound: 'sarees found',
+    noSareesFound: 'No sarees found in this range.',
+    allSarees: 'All Sarees',
+    silk: 'Silk',
+    cotton: 'Cotton',
+    linen: 'Linen',
+    showFilters: 'Show Filters',
+    hideFilters: 'Hide Filters',
+
     // About
     aboutTitle: 'About SilkWeave',
     ourStory: 'Our Story',
@@ -123,6 +138,21 @@ export const translations = {
     rating: 'மதிப்பீடு',
     reviews: 'மதிப்புரைகள்',
     outOfStock: 'கையிருப்பு இல்லை',
+
+    filters: 'வடிகட்டிகள்',
+    category: 'வகை',
+    priceRange: 'விலை வரம்பு',
+    resetFilters: 'வடிகட்டிகளை மீட்டமை',
+    clearFilters: 'வடிகட்டிகளை அழி',
+    ourCollection: 'எங்கள் தொகுப்பு',
+    sareesFound: 'புடவைகள் கண்டறியப்பட்டது',
+    noSareesFound: 'இந்த வரம்பில் புடவைகள் இல்லை.',
+    allSarees: 'அனைத்து புடவைகள்',
+    silk: 'பட்டு',
+    cotton: 'காட்டன்',
+    linen: 'லினன்',
+    showFilters: 'வடிகட்டிகளை காண்பி',
+    hideFilters: 'வடிகட்டிகளை மறை',
 
     // About
     aboutTitle: 'சில்க்வீவ் பற்றி',

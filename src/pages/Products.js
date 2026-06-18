@@ -3,12 +3,14 @@ import ProductCard from '../components/ProductCard';
 import { FaFilter, FaTimes } from 'react-icons/fa';
 import kanchipuramImage from '../assets/kanchipuram.jpg';
 import mysoreImage from '../assets/mysore.jpg';
-import cotonImage from '../assets/coton.jpg';    
+import cotonImage from '../assets/coton.jpg';
 import banarasImage from '../assets/banaras.jpg';
 import lineImage from '../assets/line.jpg';
 import ChikaImage from '../assets/chika.jpg';
+import { useLanguage } from '../context/LanguageContext';
 
 const Products = () => {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceRange, setPriceRange] = useState(15000);
   const [showFilter, setShowFilter] = useState(false);
@@ -23,10 +25,10 @@ const Products = () => {
   ];
 
   const categories = [
-    { value: 'all', label: 'All Sarees', emoji: '🧵' },
-    { value: 'silk', label: 'Silk', emoji: '✨' },
-    { value: 'cotton', label: 'Cotton', emoji: '🌿' },
-    { value: 'linen', label: 'Linen', emoji: '🍃' },
+    { value: 'all', label: t.allSarees, emoji: '🧵' },
+    { value: 'silk', label: t.silk, emoji: '✨' },
+    { value: 'cotton', label: t.cotton, emoji: '🌿' },
+    { value: 'linen', label: t.linen, emoji: '🍃' },
   ];
 
   const filteredProducts = allProducts.filter(p =>
@@ -37,13 +39,13 @@ const Products = () => {
   const FilterSidebar = () => (
     <div style={{ background: 'white', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 15px rgba(0,0,0,0.08)', position: 'sticky', top: '90px' }}>
       <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#8B1538', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <FaFilter size={14} /> Filters
+        <FaFilter size={14} /> {t.filters}
       </h3>
 
       {/* Category */}
       <div style={{ marginBottom: '1.75rem' }}>
         <p style={{ fontSize: '0.8rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
-          Category
+          {t.category}
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {categories.map(cat => (
@@ -65,7 +67,7 @@ const Products = () => {
       {/* Price Range */}
       <div>
         <p style={{ fontSize: '0.8rem', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
-          Price Range
+          {t.priceRange}
         </p>
         <input type="range" min="1000" max="15000" step="500"
           value={priceRange}
@@ -93,7 +95,7 @@ const Products = () => {
         onMouseOver={e => { e.currentTarget.style.background = '#8B1538'; e.currentTarget.style.color = 'white'; }}
         onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#8B1538'; }}
       >
-        Reset Filters
+        {t.resetFilters}
       </button>
     </div>
   );
@@ -105,10 +107,10 @@ const Products = () => {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8B1538', fontFamily: 'Playfair Display, serif', marginBottom: '0.5rem' }}>
-            Our Collection
+            {t.ourCollection}
           </h1>
           <p style={{ color: '#888', fontSize: '1rem' }}>
-            {filteredProducts.length} sarees found
+            {filteredProducts.length} {t.sareesFound}
           </p>
           <div style={{ width: '60px', height: '3px', background: '#D4AF37', margin: '0.75rem auto 0' }}></div>
         </div>
@@ -119,7 +121,7 @@ const Products = () => {
           background: '#8B1538', color: 'white', border: 'none', borderRadius: '8px',
           fontWeight: '600', cursor: 'pointer', alignItems: 'center', gap: '8px'
         }} className="md:hidden">
-          {showFilter ? <><FaTimes /> Hide Filters</> : <><FaFilter /> Show Filters</>}
+          {showFilter ? <><FaTimes /> {t.hideFilters}</> : <><FaFilter /> {t.showFilters}</>}
         </button>
 
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
@@ -139,10 +141,10 @@ const Products = () => {
             ) : (
               <div style={{ textAlign: 'center', padding: '4rem', color: '#888' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No sarees found in this range.</p>
+                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>{t.noSareesFound}</p>
                 <button onClick={() => { setSelectedCategory('all'); setPriceRange(15000); }}
                   style={{ marginTop: '1rem', padding: '0.6rem 1.5rem', background: '#8B1538', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>
-                  Clear Filters
+                  {t.clearFilters}
                 </button>
               </div>
             )}
