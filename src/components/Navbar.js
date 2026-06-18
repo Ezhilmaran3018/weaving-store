@@ -4,6 +4,7 @@ import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSearch, FaHeart, FaTrash } f
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const allProducts = [
   { id: 1, name: 'Banarasi Silk Saree', category: 'silk', price: 8999, discount: 31 },
@@ -26,6 +27,7 @@ const Navbar = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const { user, logout } = useAuth();
   const { wishlist } = useWishlist();
+  const { language, toggleLanguage, t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const searchRef = useRef(null);
@@ -51,10 +53,10 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/products', label: 'Products' },
-    { to: '/about', label: 'About' },
-    { to: '/contact', label: 'Contact' },
+    { to: '/', label: t.home },
+    { to: '/products', label: t.products },
+    { to: '/about', label: t.about },
+    { to: '/contact', label: t.contact },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -104,18 +106,10 @@ const Navbar = () => {
   };
 
   const categoryEmoji = (cat) => ({ silk: '🥻', cotton: '🌿', linen: '🌾' }[cat] || '🧵');
-
-  // Cart total
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
 
-  // Cart hover handlers
-  const handleCartMouseEnter = () => {
-    clearTimeout(cartHoverTimeout.current);
-    setShowCartPreview(true);
-  };
-  const handleCartMouseLeave = () => {
-    cartHoverTimeout.current = setTimeout(() => setShowCartPreview(false), 300);
-  };
+  const handleCartMouseEnter = () => { clearTimeout(cartHoverTimeout.current); setShowCartPreview(true); };
+  const handleCartMouseLeave = () => { cartHoverTimeout.current = setTimeout(() => setShowCartPreview(false), 300); };
 
   const iconBtnStyle = {
     background: 'none', border: 'none', color: 'white', cursor: 'pointer',
@@ -153,6 +147,17 @@ const Navbar = () => {
           {/* Right Icons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexShrink: 0 }}>
 
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              style={{ background: 'rgba(212,175,55,0.15)', border: '1.5px solid #D4AF37', color: '#D4AF37', cursor: 'pointer', padding: '0.3rem 0.7rem', borderRadius: '2rem', fontSize: '0.8rem', fontWeight: '700', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+              onMouseOver={e => { e.currentTarget.style.background = '#D4AF37'; e.currentTarget.style.color = '#8B1538'; }}
+              onMouseOut={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.15)'; e.currentTarget.style.color = '#D4AF37'; }}
+              title={language === 'en' ? 'Switch to Tamil' : 'Switch to English'}
+            >
+              {language === 'en' ? 'தமிழ்' : 'EN'}
+            </button>
+
             {/* Search */}
             <button onClick={() => { setIsSearchOpen(!isSearchOpen); setShowSuggestions(false); setSearchQuery(''); }}
               style={iconBtnStyle}
@@ -175,12 +180,7 @@ const Navbar = () => {
             </Link>
 
             {/* Cart with Preview */}
-            <div
-              ref={cartPreviewRef}
-              style={{ position: 'relative' }}
-              onMouseEnter={handleCartMouseEnter}
-              onMouseLeave={handleCartMouseLeave}
-            >
+            <div ref={cartPreviewRef} style={{ position: 'relative' }} onMouseEnter={handleCartMouseEnter} onMouseLeave={handleCartMouseLeave}>
               <Link to="/cart"
                 style={{ ...iconBtnStyle, textDecoration: 'none', position: 'relative' }}
                 onMouseOver={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.2)'; e.currentTarget.style.color = '#D4AF37'; }}
@@ -194,98 +194,62 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {/* Cart Preview Dropdown */}
               {showCartPreview && (
-                <div
-                  onMouseEnter={handleCartMouseEnter}
-                  onMouseLeave={handleCartMouseLeave}
+                <div onMouseEnter={handleCartMouseEnter} onMouseLeave={handleCartMouseLeave}
                   style={{ position: 'absolute', right: 0, top: '110%', background: 'white', borderRadius: '0.75rem', boxShadow: '0 12px 40px rgba(0,0,0,0.18)', width: '320px', zIndex: 200, overflow: 'hidden', border: '1px solid #f0ebe8' }}
                 >
-                  {/* Header */}
                   <div style={{ padding: '0.85rem 1rem', background: 'linear-gradient(to right, #8B1538, #6b0f2a)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'white', fontWeight: '700', fontSize: '0.95rem', fontFamily: "'Poppins', sans-serif" }}>
-                      🛒 Cart ({cart.length} {cart.length === 1 ? 'item' : 'items'})
+                    <span style={{ color: 'white', fontWeight: '700', fontSize: '0.95rem' }}>
+                      🛒 {t.cart} ({cart.length})
                     </span>
-                    {cart.length > 0 && (
-                      <span style={{ color: '#D4AF37', fontWeight: '700', fontSize: '0.9rem' }}>
-                        ₹{cartTotal.toLocaleString('en-IN')}
-                      </span>
-                    )}
+                    {cart.length > 0 && <span style={{ color: '#D4AF37', fontWeight: '700', fontSize: '0.9rem' }}>₹{cartTotal.toLocaleString('en-IN')}</span>}
                   </div>
-
-                  {/* Cart Items */}
                   {cart.length === 0 ? (
                     <div style={{ padding: '2rem', textAlign: 'center' }}>
                       <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🛒</div>
-                      <p style={{ color: '#9ca3af', fontSize: '0.9rem', fontFamily: "'Poppins', sans-serif", margin: 0 }}>உன் cart காலியா இருக்கு!</p>
+                      <p style={{ color: '#9ca3af', fontSize: '0.9rem', margin: 0 }}>{t.emptyCart}</p>
                       <Link to="/products" onClick={() => setShowCartPreview(false)}
                         style={{ display: 'inline-block', marginTop: '1rem', background: '#8B1538', color: 'white', padding: '0.5rem 1.2rem', borderRadius: '2rem', textDecoration: 'none', fontSize: '0.85rem', fontWeight: '600' }}
-                      >Shop Now</Link>
+                      >{t.shopNow}</Link>
                     </div>
                   ) : (
                     <>
-                      {/* Items List */}
                       <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
                         {cart.map((item, index) => (
                           <div key={item.id || index} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderBottom: '1px solid #f5f0ee' }}>
-                            {/* Emoji */}
-                            <div style={{ width: '38px', height: '38px', background: '#faf0f3', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>
-                              🥻
-                            </div>
-
-                            {/* Name & Price */}
+                            <div style={{ width: '38px', height: '38px', background: '#faf0f3', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>🥻</div>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <p style={{ margin: 0, fontWeight: '600', fontSize: '0.82rem', color: '#1a1a1a', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {item.name}
-                              </p>
-                              <p style={{ margin: 0, color: '#8B1538', fontWeight: '700', fontSize: '0.82rem' }}>
-                                ₹{item.price.toLocaleString('en-IN')}
-                              </p>
+                              <p style={{ margin: 0, fontWeight: '600', fontSize: '0.82rem', color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</p>
+                              <p style={{ margin: 0, color: '#8B1538', fontWeight: '700', fontSize: '0.82rem' }}>₹{item.price.toLocaleString('en-IN')}</p>
                             </div>
-
-                            {/* Quantity Controls */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexShrink: 0 }}>
-                              <button
-                                onClick={() => updateQuantity ? updateQuantity(item.id, (item.quantity || 1) - 1) : null}
-                                style={{ width: '24px', height: '24px', border: '1px solid #e5e7eb', borderRadius: '50%', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#8B1538', fontWeight: '700' }}
-                              >−</button>
-                              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#1a1a1a', minWidth: '16px', textAlign: 'center' }}>
-                                {item.quantity || 1}
-                              </span>
-                              <button
-                                onClick={() => updateQuantity ? updateQuantity(item.id, (item.quantity || 1) + 1) : null}
-                                style={{ width: '24px', height: '24px', border: '1px solid #e5e7eb', borderRadius: '50%', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#8B1538', fontWeight: '700' }}
-                              >+</button>
+                              <button onClick={() => updateQuantity && updateQuantity(item.id, (item.quantity || 1) - 1)} style={{ width: '24px', height: '24px', border: '1px solid #e5e7eb', borderRadius: '50%', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#8B1538', fontWeight: '700' }}>−</button>
+                              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#1a1a1a', minWidth: '16px', textAlign: 'center' }}>{item.quantity || 1}</span>
+                              <button onClick={() => updateQuantity && updateQuantity(item.id, (item.quantity || 1) + 1)} style={{ width: '24px', height: '24px', border: '1px solid #e5e7eb', borderRadius: '50%', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#8B1538', fontWeight: '700' }}>+</button>
                             </div>
-
-                            {/* Remove */}
-                            <button
-                              onClick={() => removeFromCart(item.id)}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#d1d5db', fontSize: '0.8rem', padding: '0.2rem', flexShrink: 0, transition: 'color 0.2s' }}
+                            <button onClick={() => removeFromCart(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#d1d5db', fontSize: '0.8rem', padding: '0.2rem', flexShrink: 0 }}
                               onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
                               onMouseOut={e => e.currentTarget.style.color = '#d1d5db'}
                             ><FaTrash /></button>
                           </div>
                         ))}
                       </div>
-
-                      {/* Footer */}
                       <div style={{ padding: '0.85rem 1rem', borderTop: '1px solid #f0ebe8', background: '#faf8f5' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                          <span style={{ color: '#6b7280', fontSize: '0.88rem', fontFamily: "'Poppins', sans-serif" }}>Total</span>
+                          <span style={{ color: '#6b7280', fontSize: '0.88rem' }}>{t.total}</span>
                           <span style={{ color: '#8B1538', fontWeight: '800', fontSize: '1rem' }}>₹{cartTotal.toLocaleString('en-IN')}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <Link to="/cart" onClick={() => setShowCartPreview(false)}
-                            style={{ flex: 1, textAlign: 'center', padding: '0.55rem', border: '1.5px solid #8B1538', borderRadius: '0.5rem', color: '#8B1538', textDecoration: 'none', fontWeight: '600', fontSize: '0.85rem', transition: 'all 0.2s' }}
+                            style={{ flex: 1, textAlign: 'center', padding: '0.55rem', border: '1.5px solid #8B1538', borderRadius: '0.5rem', color: '#8B1538', textDecoration: 'none', fontWeight: '600', fontSize: '0.85rem' }}
                             onMouseOver={e => { e.currentTarget.style.background = '#8B1538'; e.currentTarget.style.color = 'white'; }}
                             onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#8B1538'; }}
-                          >View Cart</Link>
+                          >{t.cart}</Link>
                           <Link to="/checkout" onClick={() => setShowCartPreview(false)}
-                            style={{ flex: 1, textAlign: 'center', padding: '0.55rem', background: '#8B1538', borderRadius: '0.5rem', color: 'white', textDecoration: 'none', fontWeight: '600', fontSize: '0.85rem', transition: 'all 0.2s' }}
+                            style={{ flex: 1, textAlign: 'center', padding: '0.55rem', background: '#8B1538', borderRadius: '0.5rem', color: 'white', textDecoration: 'none', fontWeight: '600', fontSize: '0.85rem' }}
                             onMouseOver={e => e.currentTarget.style.background = '#6b0f2a'}
                             onMouseOut={e => e.currentTarget.style.background = '#8B1538'}
-                          >Checkout →</Link>
+                          >{t.checkout} →</Link>
                         </div>
                       </div>
                     </>
@@ -307,13 +271,13 @@ const Navbar = () => {
                 >
                   <Link to="/dashboard" style={{ display: 'block', padding: '0.75rem 1rem', color: '#8B1538', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' }}
                     onMouseOver={e => { e.currentTarget.style.background = '#8B1538'; e.currentTarget.style.color = 'white'; }}
-                    onMouseOut={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#8B1538'; }}>👤 Dashboard</Link>
+                    onMouseOut={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#8B1538'; }}>👤 {t.dashboard}</Link>
                   <Link to="/wishlist" style={{ display: 'block', padding: '0.75rem 1rem', color: '#8B1538', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' }}
                     onMouseOver={e => { e.currentTarget.style.background = '#8B1538'; e.currentTarget.style.color = 'white'; }}
-                    onMouseOut={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#8B1538'; }}>❤️ Wishlist</Link>
+                    onMouseOut={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#8B1538'; }}>❤️ {t.wishlist}</Link>
                   <button onClick={logout} style={{ display: 'block', width: '100%', padding: '0.75rem 1rem', color: '#8B1538', background: 'white', border: 'none', cursor: 'pointer', fontWeight: '500', fontSize: '0.9rem', textAlign: 'left' }}
                     onMouseOver={e => { e.currentTarget.style.background = '#8B1538'; e.currentTarget.style.color = 'white'; }}
-                    onMouseOut={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#8B1538'; }}>🚪 Logout</button>
+                    onMouseOut={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#8B1538'; }}>🚪 {t.logout}</button>
                 </div>
               </div>
             ) : (
@@ -321,7 +285,7 @@ const Navbar = () => {
                 style={{ background: 'transparent', border: '1.5px solid #D4AF37', color: '#D4AF37', padding: '0.4rem 1rem', borderRadius: '2rem', fontWeight: '600', fontSize: '0.85rem', textDecoration: 'none', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
                 onMouseOver={e => { e.currentTarget.style.background = '#D4AF37'; e.currentTarget.style.color = '#8B1538'; }}
                 onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#D4AF37'; }}
-              >Login</Link>
+              >{t.login}</Link>
             )}
 
             {/* Mobile Menu Button */}
@@ -333,7 +297,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Search Bar with Live Suggestions */}
+        {/* Search Bar */}
         {isSearchOpen && (
           <div style={{ paddingBottom: '1rem' }} ref={searchContainerRef}>
             <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.5rem' }}>
@@ -341,18 +305,18 @@ const Navbar = () => {
                 <input
                   ref={searchRef}
                   type="text"
-                  placeholder="Search for sarees..."
+                  placeholder={t.search}
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onKeyDown={handleKeyDown}
                   onFocus={() => searchQuery.trim() && setShowSuggestions(true)}
-                  style={{ width: '100%', padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1.5px solid #D4AF37', outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', fontFamily: "'Poppins', sans-serif" }}
+                  style={{ width: '100%', padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1.5px solid #D4AF37', outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box' }}
                 />
                 {showSuggestions && suggestions.length > 0 && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '0.5rem', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 200, marginTop: '0.3rem', overflow: 'hidden', border: '1px solid #f0ebe8' }}>
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '0.5rem', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 200, marginTop: '0.3rem', overflow: 'hidden' }}>
                     {suggestions.map((product, index) => (
                       <div key={product.id} onClick={() => handleSuggestionClick(product)}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', cursor: 'pointer', background: activeSuggestion === index ? '#faf0f3' : 'white', borderBottom: index < suggestions.length - 1 ? '1px solid #f5f0ee' : 'none', transition: 'background 0.15s' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', cursor: 'pointer', background: activeSuggestion === index ? '#faf0f3' : 'white', borderBottom: index < suggestions.length - 1 ? '1px solid #f5f0ee' : 'none' }}
                         onMouseEnter={() => setActiveSuggestion(index)}
                         onMouseLeave={() => setActiveSuggestion(-1)}
                       >
@@ -369,36 +333,31 @@ const Navbar = () => {
                         </div>
                       </div>
                     ))}
-                    <div onClick={handleSearch}
-                      style={{ padding: '0.65rem 1rem', textAlign: 'center', background: '#faf8f5', color: '#8B1538', fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer' }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#f5eded'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#faf8f5'}
-                    >🔍 "{searchQuery}" — எல்லா results பார்க்க</div>
-                  </div>
-                )}
-                {showSuggestions && suggestions.length === 0 && searchQuery.trim().length > 0 && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '0.5rem', boxShadow: '0 8px 24px rgba(0,0,0,0.15)', zIndex: 200, marginTop: '0.3rem', padding: '1rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>
-                    😔 "{searchQuery}" — எந்த product-உம் இல்லை
                   </div>
                 )}
               </div>
-              <button type="submit" style={{ background: '#D4AF37', color: '#8B1538', border: 'none', borderRadius: '0.5rem', padding: '0 1rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>Search</button>
+              <button type="submit" style={{ background: '#D4AF37', color: '#8B1538', border: 'none', borderRadius: '0.5rem', padding: '0 1rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>{t.search.split('...')[0]}</button>
             </form>
           </div>
         )}
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Dropdown */}
       {isOpen && (
         <div style={{ background: '#6b0f2a', borderTop: '1px solid rgba(212,175,55,0.2)' }}>
           {navLinks.map(({ to, label }) => (
             <Link key={to} to={to} onClick={() => setIsOpen(false)}
-              style={{ display: 'block', padding: '0.85rem 1.5rem', color: isActive(to) ? '#D4AF37' : 'white', textDecoration: 'none', fontWeight: '500', borderLeft: isActive(to) ? '3px solid #D4AF37' : '3px solid transparent', transition: 'all 0.2s' }}
+              style={{ display: 'block', padding: '0.85rem 1.5rem', color: isActive(to) ? '#D4AF37' : 'white', textDecoration: 'none', fontWeight: '500', borderLeft: isActive(to) ? '3px solid #D4AF37' : '3px solid transparent' }}
             >{label}</Link>
           ))}
           <Link to="/wishlist" onClick={() => setIsOpen(false)}
             style={{ display: 'block', padding: '0.85rem 1.5rem', color: 'white', textDecoration: 'none', fontWeight: '500', borderLeft: '3px solid transparent' }}
-          >❤️ Wishlist</Link>
+          >❤️ {t.wishlist}</Link>
+          <div style={{ padding: '0.85rem 1.5rem' }}>
+            <button onClick={toggleLanguage}
+              style={{ background: 'rgba(212,175,55,0.15)', border: '1.5px solid #D4AF37', color: '#D4AF37', cursor: 'pointer', padding: '0.3rem 0.7rem', borderRadius: '2rem', fontSize: '0.8rem', fontWeight: '700' }}
+            >{language === 'en' ? 'தமிழ்' : 'EN'}</button>
+          </div>
         </div>
       )}
     </nav>
