@@ -13,8 +13,11 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await signup(name, email, password);
-    navigate('/');
+    const success = await signup(name, email, password);
+    if (success) {
+      navigate('/'); // Only navigate if signup succeeded
+    }
+    // If failed, error is shown in UI — user stays on signup page
   };
 
   return (

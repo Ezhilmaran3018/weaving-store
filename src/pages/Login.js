@@ -11,8 +11,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email, password);
-    navigate('/');
+    const success = await login(email, password);
+    if (success) {
+      navigate('/'); // Only navigate if login succeeded
+    }
+    // If failed, error is shown in UI — user stays on login page
   };
 
   return (
